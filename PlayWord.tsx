@@ -1,14 +1,39 @@
 import React, {Component} from 'react';
 import {Image, TouchableOpacity, Alert} from 'react-native';
+// @ts-ignore
+import Tts from 'react-native-tts';
 
 type Props = {
     word: string,
 };
 
-export default class PlayWord extends Component<Props> {
+type State = {
+    ttsInitialized: boolean
+}
+
+interface Voice {
+    language: string,
+}
+
+export default class PlayWord extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {ttsInitialized: false};
+    }
+
     playWord = () => {
         const {word} = this.props;
-        Alert.alert('Should be saying ' + word);
+
+        if (this.state.ttsInitialized) {
+            Tts.speak(word.toLowerCase());
+        }
+    }
+
+    componentDidMount = async () => {
+        await Tts.getInitStatus();
+        this.setState({ttsInitialized: true})
+        // const voices = await Tts.voices();
+        // console.log(voices.filter((voice : Voice) => voice.language == "en-US"));
     }
 
     render() {
